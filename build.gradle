@@ -28,7 +28,7 @@ dependencies {
     annotationProcessor 'org.projectlombok:lombok'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.springframework.security:spring-security-test'
-
+    implementation group: 'org.fusesource.jansi', name: 'jansi', version: '2.4.0'
     // 크롤링 jsoup
     implementation 'org.jsoup:jsoup:1.15.3'
 
