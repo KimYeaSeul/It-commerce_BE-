@@ -1,11 +1,15 @@
 package com.sideproject.shop.member.controller;
 
 import com.sideproject.shop.jwt.TokenProvider;
+import com.sideproject.shop.member.entity.dto.MemberDto;
 import com.sideproject.shop.member.entity.dto.MemberRequestDto;
 import com.sideproject.shop.member.entity.dto.MemberResponseDto;
+import com.sideproject.shop.member.service.MemberDetailsImpl;
 import com.sideproject.shop.member.service.MemberService;
+import com.sideproject.shop.utils.SecurityUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
@@ -17,9 +21,9 @@ public class MemberController {
 
     private final MemberService memberService;
 
-    @PostMapping("/auth/signup")  // 회원가입
-    public ResponseEntity<Object> signUpMember(@RequestBody MemberRequestDto memberRequestDto){
-        return ResponseEntity.ok(memberService.signUpMember(memberRequestDto)); //
+    @PostMapping("/auth/signup")  // 회원가입 , 이너클래스 사용
+    public ResponseEntity<Object> signUpMember(@RequestBody MemberDto.Request memberDto){
+        return ResponseEntity.ok(memberService.signUpMember(memberDto)); //
     }
 
     @GetMapping("/auth/checking") // 아이디 중복검사
@@ -27,8 +31,16 @@ public class MemberController {
         return ResponseEntity.ok(memberService.checkMember(memberRequestDto));
     }
 
+    @GetMapping("/auth/findid")
+    public ResponseEntity<?> findMemberInfoById() {
+        return ResponseEntity.ok(memberService.findMemberInfoById(SecurityUtil.getCurrentMemberId()));
+    }
+
+
     @PostMapping("/auth/login") // 로그인
-    public ResponseEntity<Object> signInMember(@RequestBody MemberRequestDto memberRequestDto, HttpServletResponse response){
+    public ResponseEntity<Object> signInMember(@RequestBody MemberRequestDto memberRequestDto, HttpServletResponse response
+
+    ){
 
         return ResponseEntity.ok(memberService.loginMember(memberRequestDto,response));
     }

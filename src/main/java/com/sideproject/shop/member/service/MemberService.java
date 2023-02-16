@@ -4,6 +4,7 @@ import com.sideproject.shop.ResponseDto;
 import com.sideproject.shop.jwt.RefreshToken;
 import com.sideproject.shop.jwt.TokenProvider;
 import com.sideproject.shop.member.entity.Member;
+import com.sideproject.shop.member.entity.dto.MemberDto;
 import com.sideproject.shop.member.entity.dto.MemberRequestDto;
 import com.sideproject.shop.member.entity.dto.MemberResponseDto;
 import com.sideproject.shop.jwt.TokenDto;
@@ -12,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,12 +29,12 @@ public class MemberService {
     private final PasswordEncoder passwordEncoder;
 
     @Transactional
-    public ResponseDto<?> signUpMember(MemberRequestDto memberRequestDto) {
-        if (memberRepository.existsByEmail(memberRequestDto.getUser_id())) {
+    public ResponseDto<?> signUpMember(MemberDto.Request memberDto) {
+        if (memberRepository.existsByEmail(memberDto.getUser_id())) {
             return ResponseDto.fail("200","가입되어 있습니다.");
-        }
+        } // 예외처리를 한꺼번에 할.
 
-        Member member = memberRequestDto.toMember(passwordEncoder);
+        Member member = memberDto.toMember(passwordEncoder);
         return ResponseDto.ok(MemberResponseDto.of(memberRepository.save(member)),"성공~");
     }
 
@@ -64,10 +66,14 @@ public class MemberService {
 
 
     @Transactional
-    public ResponseDto<?> loginMember(MemberRequestDto memberRequestDto, HttpServletResponse response ){
+    public ResponseDto<?> loginMember( MemberRequestDto memberRequestDto, HttpServletResponse response ){
 
         // 1. Login ID/PW 를 기반으로 AuthenticationToken 생성
         UsernamePasswordAuthenticationToken userToken = new UsernamePasswordAuthenticationToken(memberRequestDto.getUser_id(),memberRequestDto.getUser_pw());
+
+        System.out.println(memberRequestDto.getUser_id());
+        System.out.println(memberRequestDto.getUser_pw());
+        System.out.println("userToken = " + userToken);
 
         // 2. 실제로 검증 (사용자 비밀번호 체크) 이 이루어지는 부분
         //    authenticate 메서드가 실행이 될 때 CustomUserDetailsService 에서 만들었던 loadUserByUsername 메서드가 실행됨
@@ -93,5 +99,8 @@ public class MemberService {
     }
 
 
+    public Object findMemberInfoById(Long currentMemberId) {
 
+        return ResponseDto.ok("엄", "");
+    }
 }
